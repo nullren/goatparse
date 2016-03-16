@@ -48,7 +48,7 @@ const GoatparseInitialStackSize = 16
 
 //line goatparse.y:76
 
-var _parserResult time.Duration
+var _parserResult time.Time
 
 type (
 	Decrement   time.Duration
@@ -58,7 +58,7 @@ type (
 	Goatparse   time.Duration
 	Goatparse1  time.Duration
 	Goatparse11 time.Duration
-	Start       time.Duration
+	Start       time.Time
 )
 
 type GoatparseLex struct {
@@ -104,15 +104,15 @@ func (l *GoatparseLex) Error(s string) {
 }
 
 type GoatparseResult struct {
-	Duration time.Duration
-	Offset   int
+	Time   time.Time
+	Offset int
 }
 
 func ParseDuration(input string) (*GoatparseResult, error) {
 	var sc scanner.Scanner
 	sc.Init(strings.NewReader(input))
 	GoatparseParse(&GoatparseLex{s: &sc})
-	return &GoatparseResult{Duration: _parserResult, Offset: sc.Pos().Offset}, err
+	return &GoatparseResult{Time: _parserResult, Offset: sc.Pos().Offset}, err
 }
 
 //line yacctab:1
@@ -605,7 +605,7 @@ Goatparsedefault:
 		GoatparseDollar = GoatparseS[Goatparsept-1 : Goatparsept+1]
 		//line goatparse.y:74
 		{
-			_parserResult = GoatparseDollar[1].item.(time.Duration)
+			_parserResult = time.Now().Add(GoatparseDollar[1].item.(time.Duration))
 		}
 	}
 	goto Goatparsestack /* stack new state and value */
