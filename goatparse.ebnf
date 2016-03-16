@@ -1,0 +1,14 @@
+integer = .
+
+second = .
+minute = .
+hour = .
+day = .
+week = .
+fortnight = .
+
+Duration = integer (second|minute|hour|day|week|fortnight) .
+Increment = "+" Duration .
+Decrement = "-" Duration .
+
+Goatparse = Duration { Increment|Decrement } .
