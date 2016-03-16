@@ -123,7 +123,7 @@ type GoatparseResult struct {
   Offset int
 }
 
-func ParseDurationFromNow(input string) (*GoatparseResult, error) {
+func ParseDuration(input string) (*GoatparseResult, error) {
   var sc scanner.Scanner
   sc.Init(strings.NewReader(input))
   GoatparseParse(&GoatparseLex{s: &sc})
