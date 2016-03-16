@@ -71,11 +71,11 @@ Goatparse11:
   Increment { $$ = $1.(time.Duration) }
   | Decrement { $$ = $1.(time.Duration) }
 
-Start: Goatparse { _parserResult = $1.(time.Duration) }
+Start: Goatparse { _parserResult = time.Now().Add($1.(time.Duration)) }
 
 %%
 
-var _parserResult time.Duration
+var _parserResult time.Time
 
 type (
   Decrement time.Duration
@@ -85,7 +85,7 @@ type (
   Goatparse time.Duration
   Goatparse1 time.Duration
   Goatparse11 time.Duration
-  Start time.Duration
+  Start time.Time
 )
 
 type GoatparseLex struct {
@@ -119,7 +119,7 @@ func (l *GoatparseLex) Error(s string) {
 }
 
 type GoatparseResult struct {
-  Duration time.Duration
+  Time time.Time
   Offset int
 }
 
@@ -127,5 +127,5 @@ func ParseDuration(input string) (*GoatparseResult, error) {
   var sc scanner.Scanner
   sc.Init(strings.NewReader(input))
   GoatparseParse(&GoatparseLex{s: &sc})
-  return &GoatparseResult{Duration:_parserResult, Offset:sc.Pos().Offset}, err
+  return &GoatparseResult{Time:_parserResult, Offset:sc.Pos().Offset}, err
 }
