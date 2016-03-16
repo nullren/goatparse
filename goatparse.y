@@ -3,10 +3,11 @@
 package goatparse
 
 import (
-	"bytes"
+	"time"
 	"fmt"
 	"strings"
-	"time"
+	"text/scanner"
+  "strconv"
 )
 
 %}
@@ -36,10 +37,10 @@ import (
 	Decrement
 	Duration
 	Duration1
+	Increment
 	Goatparse
 	Goatparse1
 	Goatparse11
-	Increment
 	Start
 
 %start Start
@@ -84,6 +85,12 @@ Duration1:
 		$$ = time.Hour * 24 * 7 * 2
 	}
 
+Increment:
+	'+' Duration
+	{
+		$$ = $2.(time.Duration)
+	}
+
 Goatparse:
 	Duration Goatparse1
 	{
@@ -107,12 +114,6 @@ Goatparse11:
 	}
 |	Decrement
 	{
-		$$ = $2.(time.Duration)
-	}
-
-Increment:
-	'+' Duration
-	{
 		$$ = $1.(time.Duration)
 	}
 
@@ -130,9 +131,71 @@ type (
 	Decrement time.Duration
 	Duration time.Duration
 	Duration1 time.Duration
+	Increment time.Duration
 	Goatparse time.Duration
 	Goatparse1 time.Duration
 	Goatparse11 time.Duration
-	Increment time.Duration
 	Start time.Time
 )
+
+type GoatparseLex struct {
+s *scanner.Scanner
+}
+
+func (l *GoatparseLex) Lex(lval *GoatparseSymType) int {
+       tok := l.s.Scan()
+  if tok == scanner.EOF {
+    return 0
+    }
+
+tt := strings.ToLower(l.s.TokenText())
+
+  if tt == "d" || tt == "day" || tt == "days" {
+       return DAY
+  }
+
+if tt == "h" || tt == "hour" || tt == "hours" {
+       return HOUR
+  }
+
+if i, e := strconv.Atoi(tt); e == nil {
+lval.item = i
+       return INTEGER
+  }
+
+if tt == "m" || tt == "min" || tt == "mins" || tt == "minute" || tt == "minutes" {
+       return MINUTE
+  }
+
+if tt == "second" || tt == "s" || tt == "seconds" {
+       return SECOND
+  }
+
+if tt == "week" || tt == "weeks" || tt == "w" {
+       return WEEK
+  }
+
+if tt == "fortnight" || tt == "fortnights" {
+       return FORTNIGHT
+  }
+
+return int(tok)
+}
+
+var err error
+
+func (l *GoatparseLex) Error(s string) {
+err = fmt.Errorf("%v\n", s)
+}
+
+type GoatparseResult struct {
+  Time time.Time
+  Offset int
+}
+
+func ParseDurationFromNow(input string) (*GoatparseResult, error) {
+  var sc scanner.Scanner
+  sc.Init(strings.NewReader(input))
+  GoatparseParse(&GoatparseLex{s: &sc})
+  return &GoatparseResult{Time:_parserResult, Offset:sc.Pos().Offset}, err
+}
