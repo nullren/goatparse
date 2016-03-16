@@ -46,9 +46,9 @@ const GoatparseEofCode = 1
 const GoatparseErrCode = 2
 const GoatparseInitialStackSize = 16
 
-//line goatparse.y:126
+//line goatparse.y:76
 
-var _parserResult time.Time
+var _parserResult time.Duration
 
 type (
 	Decrement   time.Duration
@@ -58,7 +58,7 @@ type (
 	Goatparse   time.Duration
 	Goatparse1  time.Duration
 	Goatparse11 time.Duration
-	Start       time.Time
+	Start       time.Duration
 )
 
 type GoatparseLex struct {
@@ -70,38 +70,30 @@ func (l *GoatparseLex) Lex(lval *GoatparseSymType) int {
 	if tok == scanner.EOF {
 		return 0
 	}
-
 	tt := strings.ToLower(l.s.TokenText())
-
-	if tt == "d" || tt == "day" || tt == "days" {
-		return DAY
-	}
-
-	if tt == "h" || tt == "hour" || tt == "hours" {
-		return HOUR
-	}
 
 	if i, e := strconv.Atoi(tt); e == nil {
 		lval.item = i
 		return INTEGER
 	}
-
+	if tt == "d" || tt == "day" || tt == "days" {
+		return DAY
+	}
+	if tt == "h" || tt == "hour" || tt == "hours" {
+		return HOUR
+	}
 	if tt == "m" || tt == "min" || tt == "mins" || tt == "minute" || tt == "minutes" {
 		return MINUTE
 	}
-
 	if tt == "second" || tt == "s" || tt == "seconds" {
 		return SECOND
 	}
-
 	if tt == "week" || tt == "weeks" || tt == "w" {
 		return WEEK
 	}
-
 	if tt == "fortnight" || tt == "fortnights" {
 		return FORTNIGHT
 	}
-
 	return int(tok)
 }
 
@@ -112,15 +104,15 @@ func (l *GoatparseLex) Error(s string) {
 }
 
 type GoatparseResult struct {
-	Time   time.Time
-	Offset int
+	Duration time.Duration
+	Offset   int
 }
 
 func ParseDurationFromNow(input string) (*GoatparseResult, error) {
 	var sc scanner.Scanner
 	sc.Init(strings.NewReader(input))
 	GoatparseParse(&GoatparseLex{s: &sc})
-	return &GoatparseResult{Time: _parserResult, Offset: sc.Pos().Offset}, err
+	return &GoatparseResult{Duration: _parserResult, Offset: sc.Pos().Offset}, err
 }
 
 //line yacctab:1
@@ -527,93 +519,93 @@ Goatparsedefault:
 
 	case 1:
 		GoatparseDollar = GoatparseS[Goatparsept-2 : Goatparsept+1]
-		//line goatparse.y:52
+		//line goatparse.y:50
 		{
 			GoatparseVAL.item = -GoatparseDollar[2].item.(time.Duration)
 		}
 	case 2:
 		GoatparseDollar = GoatparseS[Goatparsept-2 : Goatparsept+1]
-		//line goatparse.y:58
+		//line goatparse.y:52
 		{
 			GoatparseVAL.item = time.Duration(GoatparseDollar[1].item.(int)) * GoatparseDollar[2].item.(time.Duration)
 		}
 	case 3:
 		GoatparseDollar = GoatparseS[Goatparsept-1 : Goatparsept+1]
-		//line goatparse.y:64
+		//line goatparse.y:55
 		{
 			GoatparseVAL.item = time.Second
 		}
 	case 4:
 		GoatparseDollar = GoatparseS[Goatparsept-1 : Goatparsept+1]
-		//line goatparse.y:68
+		//line goatparse.y:56
 		{
 			GoatparseVAL.item = time.Minute
 		}
 	case 5:
 		GoatparseDollar = GoatparseS[Goatparsept-1 : Goatparsept+1]
-		//line goatparse.y:72
+		//line goatparse.y:57
 		{
 			GoatparseVAL.item = time.Hour
 		}
 	case 6:
 		GoatparseDollar = GoatparseS[Goatparsept-1 : Goatparsept+1]
-		//line goatparse.y:76
+		//line goatparse.y:58
 		{
 			GoatparseVAL.item = time.Hour * 24
 		}
 	case 7:
 		GoatparseDollar = GoatparseS[Goatparsept-1 : Goatparsept+1]
-		//line goatparse.y:80
+		//line goatparse.y:59
 		{
 			GoatparseVAL.item = time.Hour * 24 * 7
 		}
 	case 8:
 		GoatparseDollar = GoatparseS[Goatparsept-1 : Goatparsept+1]
-		//line goatparse.y:84
+		//line goatparse.y:60
 		{
 			GoatparseVAL.item = time.Hour * 24 * 7 * 2
 		}
 	case 9:
 		GoatparseDollar = GoatparseS[Goatparsept-2 : Goatparsept+1]
-		//line goatparse.y:90
+		//line goatparse.y:62
 		{
 			GoatparseVAL.item = GoatparseDollar[2].item.(time.Duration)
 		}
 	case 10:
 		GoatparseDollar = GoatparseS[Goatparsept-2 : Goatparsept+1]
-		//line goatparse.y:96
+		//line goatparse.y:64
 		{
 			GoatparseVAL.item = GoatparseDollar[1].item.(time.Duration) + GoatparseDollar[2].item.(time.Duration)
 		}
 	case 11:
 		GoatparseDollar = GoatparseS[Goatparsept-0 : Goatparsept+1]
-		//line goatparse.y:102
+		//line goatparse.y:67
 		{
 			GoatparseVAL.item = time.Duration(0)
 		}
 	case 12:
 		GoatparseDollar = GoatparseS[Goatparsept-2 : Goatparsept+1]
-		//line goatparse.y:106
+		//line goatparse.y:68
 		{
 			GoatparseVAL.item = GoatparseDollar[1].item.(time.Duration) + GoatparseDollar[2].item.(time.Duration)
 		}
 	case 13:
 		GoatparseDollar = GoatparseS[Goatparsept-1 : Goatparsept+1]
-		//line goatparse.y:112
+		//line goatparse.y:71
 		{
 			GoatparseVAL.item = GoatparseDollar[1].item.(time.Duration)
 		}
 	case 14:
 		GoatparseDollar = GoatparseS[Goatparsept-1 : Goatparsept+1]
-		//line goatparse.y:116
+		//line goatparse.y:72
 		{
 			GoatparseVAL.item = GoatparseDollar[1].item.(time.Duration)
 		}
 	case 15:
 		GoatparseDollar = GoatparseS[Goatparsept-1 : Goatparsept+1]
-		//line goatparse.y:122
+		//line goatparse.y:74
 		{
-			_parserResult = time.Now().Add(GoatparseDollar[1].item.(time.Duration))
+			_parserResult = GoatparseDollar[1].item.(time.Duration)
 		}
 	}
 	goto Goatparsestack /* stack new state and value */

@@ -2,14 +2,16 @@ package goatparse
 
 import (
 	"testing"
-	"fmt"
-	"strings"
+	"time"
 )
 
 func TestSimpleParse(t *testing.T) {
 	input := "3 minutes - 4 days that i need to go to the store"
 	result, _ := ParseDurationFromNow(input)
-	fmt.Printf("%v: the rest: %v\n", result, strings.TrimSpace(input[result.Offset:]))
+	expected := 3 * time.Minute - 4 * time.Hour * 24
+	if result.Duration != expected {
+		t.Error("expected ", expected, " but received ", result)
+	}
 }
 
 func TestBadParse(t *testing.T) {
